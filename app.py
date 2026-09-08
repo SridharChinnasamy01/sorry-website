@@ -3,7 +3,6 @@ import requests
 
 app = Flask(__name__)
 
-# Your Google Apps Script Web App URL
 GOOGLE_SCRIPT_URL = (
     "https://script.google.com/macros/s/"
     "AKfycbyGmoPCuOEXwdAvN6taXLdZyQOFoRUfEtDLsEhHJ85sJsmJqnFHopdK_vy-1YSNNLSl"
@@ -16,12 +15,15 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/date", methods=["POST"])
+@app.route("/date", methods=["GET", "POST"])
 def date():
-    # Get the date selected by your friend
+    # When your friend clicks Yes ❤️ on the first page
+    if request.method == "GET":
+        return render_template("date.html")
+
+    # When your friend selects a date and clicks Yes 💕
     selected_date = request.form.get("selected_date")
 
-    # Send the selected date to Google Apps Script
     try:
         response = requests.post(
             GOOGLE_SCRIPT_URL,
@@ -36,7 +38,6 @@ def date():
     except requests.exceptions.RequestException as error:
         print("Email notification error:", error)
 
-    # Show the success page even if the email request fails
     return redirect(url_for("success"))
 
 
