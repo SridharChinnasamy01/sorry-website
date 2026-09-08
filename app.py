@@ -1,76 +1,53 @@
-from flask import Flask, render_template, request
-import os
-import urllib.parse
-import urllib.request
+from flask import Flask, render_template, request, redirect, url_for
+import requests
 
 app = Flask(__name__)
 
-
-def send_notification(selected_date):
-    receiver_email = os.environ.get("RECEIVER_EMAIL")
-
-    if not receiver_email:
-        raise Exception("RECEIVER_EMAIL is missing")
-
-    # FormSubmit email endpoint
-    url = f"https://formsubmit.co/{receiver_email}"
-
-    data = urllib.parse.urlencode({
-        "Subject": "Sorry Website - New Date Selected",
-        "Selected Date": selected_date,
-        "message": (
-            "Someone submitted the Sorry Website form.\n\n"
-            f"Selected date: {selected_date}\n\n"
-            "Open your website to see the confirmation."
-        ),
-        "_captcha": "false",
-        "_template": "table"
-    }).encode("utf-8")
-
-    request = urllib.request.Request(
-        url,
-        data=data,
-        method="POST"
-    )
-
-    with urllib.request.urlopen(request, timeout=30) as response:
-        if response.status != 200:
-            raise Exception(f"Email service returned status {response.status}")
-
-    print("EMAIL SENT SUCCESSFULLY", flush=True)
+# Your Google Apps Script Web App URL
+GOOGLE_SCRIPT_URL = (
+    "https://script.google.com/macros/s/"
+    "AKfycbyGmoPCuOEXwdAvN6taXLdZyQOFoRUfEtDLsEhHJ85sJsmJqnFHopdK_vy-1YSNNLSl"
+    "/exec"
+)
 
 
-# PAGE 1
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# PAGE 2
-@app.route("/date")
+@app.route("/date", methods=["POST"])
 def date():
-    return render_template("date.html")
-
-
-# PAGE 3
-@app.route("/success", methods=["POST"])
-def success():
+    # Get the date selected by your friend
     selected_date = request.form.get("selected_date")
 
+    # Send the selected date to Google Apps Script
     try:
-        send_notification(selected_date)
-        notification_sent = True
+        response = requests.post(
+            GOOGLE_SCRIPT_URL,
+            json={
+                "selected_date": selected_date
+            },
+            timeout=15
+        )
 
-    except Exception as error:
-        print("Email error:", error, flush=True)
-        notification_sent = False
+        print("Google Apps Script response:", response.text)
 
-    return render_template(
-        "success.html",
-        selected_date=selected_date,
-        notification_sent=notification_sent
-    )
+    except requests.exceptions.RequestException as error:
+        print("Email notification error:", error)
+
+    # Show the success page even if the email request fails
+    return redirect(url_for("success"))
+
+
+@app.route("/success")
+def success():
+    return render_template("success.html")
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False
+    )
