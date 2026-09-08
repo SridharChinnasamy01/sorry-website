@@ -56,6 +56,10 @@
             outline: none;
         }
 
+        input:focus {
+            border-color: #e91e63;
+        }
+
         .buttons {
             position: relative;
             height: 100px;
@@ -104,7 +108,8 @@
             Will you go on a date with me?
         </p>
 
-        <form action="/success" method="POST">
+        <!-- Submit the selected date to Flask -->
+        <form action="/date" method="POST">
 
             <input
                 type="date"
@@ -134,8 +139,15 @@
         function moveNoButton() {
             const container = document.querySelector(".buttons");
 
-            const maxX = container.clientWidth - noButton.offsetWidth;
-            const maxY = container.clientHeight - noButton.offsetHeight;
+            const maxX = Math.max(
+                0,
+                container.clientWidth - noButton.offsetWidth
+            );
+
+            const maxY = Math.max(
+                0,
+                container.clientHeight - noButton.offsetHeight
+            );
 
             const randomX = Math.random() * maxX;
             const randomY = Math.random() * maxY;
