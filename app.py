@@ -1,52 +1,41 @@
 from flask import Flask, render_template, request
 import os
-import smtplib
-from email.message import EmailMessage
+import urllib.parse
+import urllib.request
 
 app = Flask(__name__)
 
 
 def send_notification(selected_date):
-    sender_email = os.environ.get("SENDER_EMAIL")
     receiver_email = os.environ.get("RECEIVER_EMAIL")
-    app_password = os.environ.get("EMAIL_APP_PASSWORD")
-
-    # Check that Render has all required settings
-    if not sender_email:
-        raise Exception("SENDER_EMAIL is missing")
 
     if not receiver_email:
         raise Exception("RECEIVER_EMAIL is missing")
 
-    if not app_password:
-        raise Exception("EMAIL_APP_PASSWORD is missing")
+    # FormSubmit email endpoint
+    url = f"https://formsubmit.co/{receiver_email}"
 
-    # Create the email
-    message = EmailMessage()
-    message["Subject"] = "Sorry Website - New Date Selected"
-    message["From"] = sender_email
-    message["To"] = receiver_email
+    data = urllib.parse.urlencode({
+        "Subject": "Sorry Website - New Date Selected",
+        "Selected Date": selected_date,
+        "message": (
+            "Someone submitted the Sorry Website form.\n\n"
+            f"Selected date: {selected_date}\n\n"
+            "Open your website to see the confirmation."
+        ),
+        "_captcha": "false",
+        "_template": "table"
+    }).encode("utf-8")
 
-    message.set_content(
-        f"""Someone submitted the Sorry Website form.
-
-Selected date: {selected_date}
-
-Open your website to see the confirmation.
-"""
+    request = urllib.request.Request(
+        url,
+        data=data,
+        method="POST"
     )
 
-    # Connect to Gmail and send the email
-    print("Connecting to Gmail SMTP...", flush=True)
-
-    with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as server:
-        server.starttls()
-
-        print("Logging in to Gmail...", flush=True)
-        server.login(sender_email, app_password)
-
-        print("Sending email...", flush=True)
-        server.send_message(message)
+    with urllib.request.urlopen(request, timeout=30) as response:
+        if response.status != 200:
+            raise Exception(f"Email service returned status {response.status}")
 
     print("EMAIL SENT SUCCESSFULLY", flush=True)
 
