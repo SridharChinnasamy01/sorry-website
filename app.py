@@ -5,10 +5,9 @@ app = Flask(__name__)
 
 GOOGLE_SCRIPT_URL = (
     "https://script.google.com/macros/s/"
-    "AKfycbyGmoPCuOEXwdAvN6taXLdZyQOFoRUfEtDLsEhHJ85sJsmJqnFHopdK_vy-1YSNNLSl"
+    "AKfycbyc1WaP-rDL4S2hRXZZdXQEquuVk0-r13hYyHegkWs8iBmbQjUPRaN5k_tl8W4G0HDK"
     "/exec"
 )
-
 
 @app.route("/")
 def home():
