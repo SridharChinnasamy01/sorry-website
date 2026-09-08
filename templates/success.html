@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Confirmed ❤️</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffd6e7, #fff0f5);
+        }
+
+        .card {
+            width: 90%;
+            max-width: 450px;
+            padding: 45px 30px;
+            text-align: center;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .heart {
+            font-size: 70px;
+            animation: beat 1.2s infinite;
+        }
+
+        h1 {
+            color: #e91e63;
+            margin: 20px 0 15px;
+        }
+
+        p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .date {
+            margin: 25px 0;
+            padding: 18px;
+            background: #fff0f5;
+            border-radius: 15px;
+            color: #e91e63;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        @keyframes beat {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <div class="heart">💖</div>
+
+        <h1>Date Confirmed!</h1>
+
+        <p>
+            I'm really happy you said yes. 🥹<br>
+            Our date is officially planned!
+        </p>
+
+        <div class="date">
+            📅 {{ selected_date }}
+        </div>
+
+        <p>
+            I can't wait to spend time with you. ❤️
+        </p>
+
+    </div>
+
+</body>
+</html>
